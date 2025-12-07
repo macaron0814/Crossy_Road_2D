@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
         HandleMouseInput();
 #else
         // スマホ用
-        HandleTouchInput();
+        HandleMouseInput();
 #endif
     }
 
