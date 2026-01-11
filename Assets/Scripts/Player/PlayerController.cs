@@ -19,9 +19,14 @@ public class PlayerController : MonoBehaviour
     private Vector2 swipeEndPos;
 
     private Vector3 currentDirection = Vector3.up; // 初期は上向き
+    private PlayerSpriteAnimator animator;
+    private float lastMoveEndTime;
+    private const float IDLE_DELAY = 0.2f;
 
     private void Start()
     {
+        animator = PlayerSpriteAnimator.instance;
+
         // GameManagerのイベントを購読
         if (GameManager.Instance != null)
         {
@@ -32,6 +37,14 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (isMoving) return;
+
+        // 入力が無いときだけアイドルに戻す（毎フレームのリスタートを防ぐ）
+        // 連続移動時のアニメーション切れを防ぐため、移動終了から少し猶予を持たせる
+        bool inIdleDelay = Time.time < lastMoveEndTime + IDLE_DELAY;
+        if (!IsPointerPressed() && !inIdleDelay)
+        {
+            SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.IdleUp, restartOnChange: true);
+        }
 
 #if UNITY_EDITOR
         // PCデバッグ用
@@ -244,6 +257,9 @@ public class PlayerController : MonoBehaviour
         float t = 0;
         Vector3 start = transform.position;
 
+        // 同じモーションが続く場合はフレームを維持したままループする
+        SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveUp, restartOnChange: false);
+
         while (t < moveTime)
         {
             t += Time.deltaTime;
@@ -253,6 +269,7 @@ public class PlayerController : MonoBehaviour
 
         transform.position = targetPos;
         isMoving = false;
+        lastMoveEndTime = Time.time;
 
         // 到達したらスコア加算等
         // GameManager.Instance.UpdateScore(Mathf.FloorToInt(transform.position.y));
@@ -289,5 +306,23 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.AddStamina(30);
             Destroy(other.gameObject);
         }
+    }
+
+    private void SetAnimatorMotion(PlayerBaseMapSwapper.MotionType motion, bool restartOnChange)
+    {
+        if (animator == null) animator = PlayerSpriteAnimator.instance;
+        if (animator == null) return;
+
+        bool shouldRestart = restartOnChange && animator.CurrentMotion != motion;
+        animator.Play(motion, shouldRestart);
+    }
+
+    private bool IsPointerPressed()
+    {
+#if UNITY_EDITOR
+        return Input.GetMouseButton(0);
+#else
+        return Input.touchCount > 0 || Input.GetMouseButton(0);
+#endif
     }
 }

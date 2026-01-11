@@ -9,11 +9,9 @@ public class CarController : MonoBehaviour
     [Header("破棄設定")]
     public float destroyDistance = 20f; // 画面外に出たら破棄
 
-    float randomSpeed;
-
     private void Start()
     {
-        randomSpeed = Random.Range(3, randomSpeed);
+        
     }
 
     void Update()

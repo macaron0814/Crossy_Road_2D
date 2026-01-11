@@ -48,7 +48,6 @@ public class UIController : MonoBehaviour
         // イベントの購読を解除
         if (GameManager.Instance != null)
         {
-            GameManager.Instance.OnStaminaUpdated -= UpdateStaminaDisplay;
             GameManager.Instance.OnScoreUpdated -= UpdateScoreDisplay;
             GameManager.Instance.OnGameOver -= ShowGameOver;
             GameManager.Instance.OnGameRestart -= HideGameOver;
@@ -102,6 +101,11 @@ public class UIController : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.RestartGame();
+
+            // イベントの購読を解除
+            GameManager.Instance.OnScoreUpdated -= UpdateScoreDisplay;
+            GameManager.Instance.OnGameOver -= ShowGameOver;
+            GameManager.Instance.OnGameRestart -= HideGameOver;
         }
     }
 }

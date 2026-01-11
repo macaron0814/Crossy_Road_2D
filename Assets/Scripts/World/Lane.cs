@@ -22,6 +22,16 @@ public class Lane : MonoBehaviour
     [Header("移動設定（丸太用）")]
     public float logSpeed = 2f;
 
+    [Header("ランダム設定")]
+    [Tooltip("Roadレーンの車の速度の最小値")]
+    public float minCarSpeed = 3f;
+    [Tooltip("Roadレーンの車の速度の最大値")]
+    public float maxCarSpeed = 6f;
+    [Tooltip("Road/Railレーンのスポーン間隔の最小値")]
+    public float minSpawnInterval = 2f;
+    [Tooltip("Road/Railレーンのスポーン間隔の最大値")]
+    public float maxSpawnInterval = 5f;
+
     private float lastSpawnTime = 0f;
     private int currentObstacleCount = 0;
 
@@ -37,13 +47,29 @@ public class Lane : MonoBehaviour
     {
         if (laneType == LaneType.Grass) return;
 
+        // レーンごとのランダム設定（タイミングと速度）
+        if (laneType == LaneType.Road)
+        {
+            obstacleSpeed = UnityEngine.Random.Range(minCarSpeed, maxCarSpeed);
+            spawnInterval = UnityEngine.Random.Range(minSpawnInterval, maxSpawnInterval);
+        }
+        else if (laneType == LaneType.Rail)
+        {
+            // 電車は速度は維持（またはInspector設定）、タイミングのみランダム
+            // 電車は頻度が低めが良いので少し長めに補正しても良いが、ここでは範囲を使用
+            spawnInterval = UnityEngine.Random.Range(minSpawnInterval + 2f, maxSpawnInterval + 3f);
+        }
+
+        // 初期スポーンのタイミングをずらす
+        lastSpawnTime = Time.time - UnityEngine.Random.Range(0f, spawnInterval);
+
         int itemRand = UnityEngine.Random.Range(-10, 11);
         int itemCreatePercentRand = UnityEngine.Random.Range(0, 100);
 
         if (itemCreatePercentRand < itemCreatePercent)
         {
             // 障害物を生成
-            GameObject item = Instantiate(itemPrefab, new Vector3(itemRand, transform.position.y, 0), Quaternion.identity);
+            GameObject item = Instantiate(itemPrefab, new Vector3(itemRand, transform.position.y, -0.5f), Quaternion.identity);
             item.transform.SetParent(transform);
         }
     }
@@ -58,7 +84,7 @@ public class Lane : MonoBehaviour
                 int rand = UnityEngine.Random.Range(-10, 11);
 
                 // 障害物を生成
-                GameObject obstacle = Instantiate(obstaclePrefab, new Vector3(rand, transform.position.y, 0), Quaternion.identity);
+                GameObject obstacle = Instantiate(obstaclePrefab, new Vector3(rand, transform.position.y, -0.5f), Quaternion.identity);
                 obstacle.transform.SetParent(transform);
 
                 // カウントを増やす
@@ -88,7 +114,7 @@ public class Lane : MonoBehaviour
 
         // スポーン位置を計算
         float spawnX = spawnFromRight ? spawnOffsetX : -spawnOffsetX;
-        Vector3 spawnPos = new Vector3(spawnX, transform.position.y, 0);
+        Vector3 spawnPos = new Vector3(spawnX, transform.position.y, -0.5f);
 
         // 障害物を生成
         GameObject obstacle = Instantiate(obstaclePrefab, spawnPos, Quaternion.identity);
