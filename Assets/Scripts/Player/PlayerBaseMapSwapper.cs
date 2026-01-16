@@ -9,7 +9,13 @@ public class PlayerBaseMapSwapper : MonoBehaviour
     public enum MotionType
     {
         IdleUp, // 1 待機モーション(↑方向) / ↑待機*
+        IdelDown,
+        IdelLeft,
+        IdelRight,
         MoveUp, // 2 移動モーション(↑方向) / ↑移動*
+        MoveDown,
+        MoveLeft,
+        MoveRight,
         Turn,   // 3 振り向きモーション / 振り向き*
         Hit     // 4 ぶつかりモーション / ぶつかり*
     }
@@ -22,8 +28,14 @@ public class PlayerBaseMapSwapper : MonoBehaviour
     [Header("モーション 大ラフ から割り当て (Sprite 配列)")]
     [Tooltip("IdleUp のアニメーションフレームを順番に並べる")]
     [SerializeField] private Sprite[] idleUpSprites;
+    [SerializeField] private Sprite[] idleDownSprites;
+    [SerializeField] private Sprite[] idleLeftSprites;
+    [SerializeField] private Sprite[] idleRightSprites;
     [Tooltip("MoveUp のアニメーションフレームを順番に並べる")]
     [SerializeField] private Sprite[] moveUpSprites;
+    [SerializeField] private Sprite[] moveDownSprites;
+    [SerializeField] private Sprite[] moveLeftSprites;
+    [SerializeField] private Sprite[] moveRightSprites;
     [Tooltip("Turn のアニメーションフレームを順番に並べる")]
     [SerializeField] private Sprite[] turnSprites;
     [Tooltip("Hit のアニメーションフレームを順番に並べる")]
@@ -65,8 +77,20 @@ public class PlayerBaseMapSwapper : MonoBehaviour
         {
             case MotionType.IdleUp:
                 return GetFrame(idleUpSprites, frameIndex);
+            case MotionType.IdelDown:
+                return GetFrame(idleDownSprites, frameIndex);
+            case MotionType.IdelLeft:
+                return GetFrame(idleLeftSprites, frameIndex);
+            case MotionType.IdelRight:
+                return GetFrame(idleRightSprites, frameIndex);
             case MotionType.MoveUp:
                 return GetFrame(moveUpSprites, frameIndex);
+            case MotionType.MoveDown:
+                return GetFrame(moveDownSprites, frameIndex);
+            case MotionType.MoveLeft:
+                return GetFrame(moveLeftSprites, frameIndex);
+            case MotionType.MoveRight:
+                return GetFrame(moveRightSprites, frameIndex);
             case MotionType.Turn:
                 return GetFrame(turnSprites, frameIndex);
             case MotionType.Hit:
@@ -89,8 +113,20 @@ public class PlayerBaseMapSwapper : MonoBehaviour
         {
             case MotionType.IdleUp:
                 return GetLength(idleUpSprites);
+            case MotionType.IdelDown:
+                return GetLength(idleUpSprites);
+            case MotionType.IdelLeft:
+                return GetLength(idleLeftSprites);
+            case MotionType.IdelRight:
+                return GetLength(idleRightSprites);
             case MotionType.MoveUp:
                 return GetLength(moveUpSprites);
+            case MotionType.MoveDown:
+                return GetLength(moveDownSprites);
+            case MotionType.MoveLeft:
+                return GetLength(moveLeftSprites);
+            case MotionType.MoveRight:
+                return GetLength(moveRightSprites);
             case MotionType.Turn:
                 return GetLength(turnSprites);
             case MotionType.Hit:

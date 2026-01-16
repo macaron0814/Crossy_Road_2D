@@ -1799,7 +1799,7 @@ GameObject:
   - component: {fileID: 1636281155}
   - component: {fileID: 1636281157}
   - component: {fileID: 1636281156}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player (1)
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1893,7 +1893,7 @@ GameObject:
   - component: {fileID: 1742705912}
   - component: {fileID: 1742705918}
   - component: {fileID: 1742705919}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -2047,7 +2047,7 @@ Transform:
   m_GameObject: {fileID: 1742705911}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5, z: -1}
+  m_LocalPosition: {x: 0, y: 5, z: -1.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2073,11 +2073,41 @@ MonoBehaviour:
   - {fileID: -62114263341136832, guid: bf390f0919cee4fb3ad8ea1ca60a898d, type: 3}
   - {fileID: -8748701860862552960, guid: a1d1673d3f78748eab99ad02aed49c70, type: 3}
   - {fileID: 346748427224076123, guid: a9e316e5a6637459eb284ed8a8b65541, type: 3}
+  idleDownSprites:
+  - {fileID: 2856965188063248507, guid: 4e756da31057b4de3b99ea0e65905e3c, type: 3}
+  - {fileID: -8213500552597279849, guid: b9422a98133714fd8931a91abf37d505, type: 3}
+  - {fileID: 5901251584093117987, guid: 49c624b9c4ae4485c91e7a584d2a69d3, type: 3}
+  - {fileID: -7267430960668227911, guid: a02283307b9b94efe9e2fc61d12f2acf, type: 3}
+  idleLeftSprites:
+  - {fileID: -1139971799543671508, guid: 123de68234e384218833968982dea32e, type: 3}
+  - {fileID: 3827376210110899461, guid: 189d7d888b26148e899a32e0e2bb47be, type: 3}
+  - {fileID: -325862970280686555, guid: bd4aacf6985e4484a990ec2ff4c1d1b9, type: 3}
+  - {fileID: -4152312304398896509, guid: c80a399f0810d4399b2e928587e7728f, type: 3}
+  idleRightSprites:
+  - {fileID: -1238569544349042606, guid: 212bde638da8e43d28aba04239e6e5ba, type: 3}
+  - {fileID: -2216876855030346539, guid: 3033b276f893a40e781a1b4bbe98f17b, type: 3}
+  - {fileID: 8582765856419380870, guid: 5cb2a5980c1f548d68222c04b9407cba, type: 3}
+  - {fileID: 2887906899321692296, guid: 66bb6f022d0e74593bfffbb16194a316, type: 3}
   moveUpSprites:
   - {fileID: 4023215410088239657, guid: 5f694b7f6e3d948738903f3e212e7661, type: 3}
   - {fileID: -3129210199076049456, guid: baf0b1b12baa04be4870daed75373787, type: 3}
   - {fileID: 6994449207822484337, guid: 9e882299274684a8688c226645fb9497, type: 3}
   - {fileID: -7913526404691451651, guid: 5fca4aaf68d7e4c9495ca13a5f7fe6dd, type: 3}
+  moveDownSprites:
+  - {fileID: 5422471883761164314, guid: da640d20388bd4b9f8d2d27008bda193, type: 3}
+  - {fileID: -6878219811365696991, guid: 4dba8598f36eb437bbf4814cd0a2b366, type: 3}
+  - {fileID: 3846612553007364363, guid: fb813a0c2489447828577eb0eabfa49b, type: 3}
+  - {fileID: 4999820515800619585, guid: 1fcdc2818cbd64417903b428a293ebe4, type: 3}
+  moveLeftSprites:
+  - {fileID: 1449076811171265264, guid: 36923d3a462fe4a92ad68a91c72cc2f6, type: 3}
+  - {fileID: 3719864647209733007, guid: 2b2b25ade709e4810a1bbac1c0f319a4, type: 3}
+  - {fileID: -5812712078159110040, guid: e8f35904077bd408c9626a756e18c458, type: 3}
+  - {fileID: -7308258649061572358, guid: 8d8fa6ae7c19b41cfa75747f521b828e, type: 3}
+  moveRightSprites:
+  - {fileID: 479540417492852196, guid: ad38552f3cc3940a9bb62b79df84e189, type: 3}
+  - {fileID: 2276013436999971103, guid: 2a03954ba25d64e68a871236b968babc, type: 3}
+  - {fileID: -5824552859919247443, guid: 6f670f1d797444511bb8975085df4ba1, type: 3}
+  - {fileID: 8493503978469015454, guid: a24f0114145f1448bbfc559cdae39121, type: 3}
   turnSprites:
   - {fileID: 6287627105608709165, guid: a675819b1fdfc455f94d65367f7a891f, type: 3}
   - {fileID: -1768101763061187427, guid: 96f7cdb6b054042aabe45704608add38, type: 3}
@@ -2106,7 +2136,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSpriteAnimator
   swapper: {fileID: 1742705918}
   currentMotion: 0
-  frameDuration: 0.15
+  frameIdelDuration: 0.15
+  frameMoveDuration: 0.1
   playOnEnable: 1
   loop: 1
 --- !u!1 &1748690324

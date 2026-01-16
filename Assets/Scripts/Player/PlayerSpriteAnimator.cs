@@ -10,7 +10,8 @@ public class PlayerSpriteAnimator : MonoBehaviour
     [SerializeField] private PlayerBaseMapSwapper swapper;
     [SerializeField] private PlayerBaseMapSwapper.MotionType currentMotion = PlayerBaseMapSwapper.MotionType.IdleUp;
     [Tooltip("1フレームあたりの時間(秒)")]
-    [SerializeField] private float frameDuration = 0.15f;
+    [SerializeField] private float frameIdelDuration = 0.15f;
+    [SerializeField] private float frameMoveDuration = 0.15f;
     [Tooltip("有効化時に自動再生する")]
     [SerializeField] private bool playOnEnable = true;
     [Tooltip("最後のフレームまで再生したら最初に戻る")]
@@ -42,13 +43,31 @@ public class PlayerSpriteAnimator : MonoBehaviour
     private void Update()
     {
         if (!playing || swapper == null) return;
-        if (frameDuration <= 0f) frameDuration = 0.01f; // 安全な下限
 
-        timer += Time.deltaTime;
-        while (timer >= frameDuration)
+        if(currentMotion == PlayerBaseMapSwapper.MotionType.IdleUp ||
+           currentMotion == PlayerBaseMapSwapper.MotionType.IdelDown ||
+           currentMotion == PlayerBaseMapSwapper.MotionType.IdelLeft ||
+           currentMotion == PlayerBaseMapSwapper.MotionType.IdelRight)
         {
-            timer -= frameDuration;
-            StepFrame();
+            if (frameIdelDuration <= 0f) frameIdelDuration = 0.01f; // 安全な下限
+
+            timer += Time.deltaTime;
+            while (timer >= frameIdelDuration)
+            {
+                timer -= frameIdelDuration;
+                StepFrame();
+            }
+        }
+        else
+        {
+            if (frameMoveDuration <= 0f) frameMoveDuration = 0.01f; // 安全な下限
+
+            timer += Time.deltaTime;
+            while (timer >= frameMoveDuration)
+            {
+                timer -= frameMoveDuration;
+                StepFrame();
+            }
         }
     }
 

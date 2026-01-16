@@ -56,6 +56,10 @@ MonoBehaviour:
   maxObstacles: 5
   obstacleSpeed: 0
   logSpeed: 10
+  minCarSpeed: 3
+  maxCarSpeed: 6
+  minSpawnInterval: 2
+  maxSpawnInterval: 5
 --- !u!33 &3809660301852806726
 MeshFilter:
   m_ObjectHideFlags: 0

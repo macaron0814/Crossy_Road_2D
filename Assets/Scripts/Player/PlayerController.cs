@@ -21,7 +21,16 @@ public class PlayerController : MonoBehaviour
     private Vector3 currentDirection = Vector3.up; // 初期は上向き
     private PlayerSpriteAnimator animator;
     private float lastMoveEndTime;
-    private const float IDLE_DELAY = 0.2f;
+    private const float IDLE_DELAY = 0.4f;
+
+    enum SelectDir
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+    SelectDir selectDir = SelectDir.Up;
 
     private void Start()
     {
@@ -43,7 +52,21 @@ public class PlayerController : MonoBehaviour
         bool inIdleDelay = Time.time < lastMoveEndTime + IDLE_DELAY;
         if (!IsPointerPressed() && !inIdleDelay)
         {
-            SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.IdleUp, restartOnChange: true);
+            switch (selectDir)
+            {
+                case SelectDir.Up:
+                    SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.IdleUp, false);
+                    break;
+                case SelectDir.Down:
+                    SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.IdelDown, false);
+                    break;
+                case SelectDir.Left:
+                    SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.IdelLeft, false);
+                    break;
+                case SelectDir.Right:
+                    SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.IdelRight, false);
+                    break;
+            }
         }
 
 #if UNITY_EDITOR
@@ -107,6 +130,8 @@ public class PlayerController : MonoBehaviour
         {
             // タップ時は常に上方向に前進
             MoveInDirection(Vector3.up);
+            SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveUp, true);
+            selectDir = SelectDir.Up;
             return;
         }
 
@@ -117,38 +142,45 @@ public class PlayerController : MonoBehaviour
         {
             // 横スワイプ
             if (delta.x > 0)
-                SetDirection(Vector3.right);
+                SetDirection(Vector3.right, SelectDir.Right);
             else
-                SetDirection(Vector3.left);
+                SetDirection(Vector3.left, SelectDir.Left);
         }
         else
         {
             // 縦スワイプ
             if (delta.y > 0)
-                SetDirection(Vector3.up);
+                SetDirection(Vector3.up, SelectDir.Up);
             else
-                SetDirection(Vector3.down);
+                SetDirection(Vector3.down, SelectDir.Down);
         }
     }
 
     // ================================
     // 向きを設定
     // ================================
-    void SetDirection(Vector3 dir)
+    void SetDirection(Vector3 dir, SelectDir sd)
     {
-        // 既に同じ向きなら前進
-        if (currentDirection == dir)
+        selectDir = sd;
+        switch (selectDir)
         {
-            MoveForward();
-            return;
+            case SelectDir.Up:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveUp, true);
+                break;
+            case SelectDir.Down:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveDown, true);
+                break;
+            case SelectDir.Left:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveLeft, true);
+                break;
+            case SelectDir.Right:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveRight, true);
+                break;
         }
 
         // 向きだけ変える
         currentDirection = dir;
-
-        // キャラクターの見た目方向を変えたいならここでRotate
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle - 90); // 上をデフォルトに合わせた補正
+        MoveForward();
     }
 
     // ================================
@@ -258,7 +290,21 @@ public class PlayerController : MonoBehaviour
         Vector3 start = transform.position;
 
         // 同じモーションが続く場合はフレームを維持したままループする
-        SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveUp, restartOnChange: false);
+        switch (selectDir)
+        {
+            case SelectDir.Up:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveUp, false);
+                break;
+            case SelectDir.Down:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveDown, false);
+                break;
+            case SelectDir.Left:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveLeft, false);
+                break;
+            case SelectDir.Right:
+                SetAnimatorMotion(PlayerBaseMapSwapper.MotionType.MoveRight, false);
+                break;
+        }
 
         while (t < moveTime)
         {
