@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 1, z: 1}
+  m_LocalScale: {x: 20, y: 2.8, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -56,6 +56,10 @@ MonoBehaviour:
   maxObstacles: 10
   obstacleSpeed: 10
   logSpeed: 10
+  minCarSpeed: 3
+  maxCarSpeed: 6
+  minSpawnInterval: 2
+  maxSpawnInterval: 5
 --- !u!33 &1168115225676295284
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -89,7 +93,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5f351d8f257b747a78d3e6d1896ad4d9, type: 2}
+  - {fileID: 2100000, guid: d9c5bbdd0b96746d4baa6b0df99e6b42, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
