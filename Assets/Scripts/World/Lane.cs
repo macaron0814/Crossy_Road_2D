@@ -8,7 +8,7 @@ public class Lane : MonoBehaviour
     public LaneType laneType = LaneType.Grass;
 
     [Header("スポナー設定")]
-    public GameObject obstaclePrefab; // 障害物のPrefab
+    public GameObject[] obstaclePrefab; // 障害物のPrefab
     public GameObject itemPrefab; // アイテムのPrefab
     public int itemCreatePercent;
     public float spawnInterval = 2f; // スポーン間隔
@@ -84,7 +84,8 @@ public class Lane : MonoBehaviour
                 int rand = UnityEngine.Random.Range(-10, 11);
 
                 // 障害物を生成
-                GameObject obstacle = Instantiate(obstaclePrefab, new Vector3(rand, transform.position.y, -0.5f), Quaternion.identity);
+                int obstacleRand = UnityEngine.Random.Range(0, 3);
+                GameObject obstacle = Instantiate(obstaclePrefab[obstacleRand], new Vector3(rand, transform.position.y, -0.5f), Quaternion.identity);
                 obstacle.transform.SetParent(transform);
 
                 // カウントを増やす
@@ -92,9 +93,6 @@ public class Lane : MonoBehaviour
             }
             return;
         }
-
-        // Prefabが設定されていない場合はスポーンしない
-        if (obstaclePrefab == null) return;
 
         // スポーン間隔チェック
         if (Time.time - lastSpawnTime >= spawnInterval)
@@ -117,7 +115,8 @@ public class Lane : MonoBehaviour
         Vector3 spawnPos = new Vector3(spawnX, transform.position.y, -0.5f);
 
         // 障害物を生成
-        GameObject obstacle = Instantiate(obstaclePrefab, spawnPos, Quaternion.identity);
+        int obstacleRand = UnityEngine.Random.Range(0, 3);
+        GameObject obstacle = Instantiate(obstaclePrefab[obstacleRand], spawnPos, Quaternion.identity);
         obstacle.transform.SetParent(transform);
 
         // 移動スクリプトを設定

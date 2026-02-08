@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 15, y: 2.8, z: 0.01}
+  m_LocalScale: {x: 30, y: 1, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneType: 1
-  obstaclePrefab: {fileID: 6650655716327874104, guid: f1630cfeaf394454f9b5eb6c22941b0f, type: 3}
+  obstaclePrefab:
+  - {fileID: 6650655716327874104, guid: f1630cfeaf394454f9b5eb6c22941b0f, type: 3}
   itemPrefab: {fileID: 6650655716327874104, guid: f27640f6bb22e4cc7af56407127d8d40, type: 3}
   itemCreatePercent: 20
   spawnInterval: 1.5

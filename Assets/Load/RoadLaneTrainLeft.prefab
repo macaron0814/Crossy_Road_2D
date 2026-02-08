@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   laneType: 3
-  obstaclePrefab: {fileID: 6650655716327874104, guid: a45f2ac88ccb54d39a4f342b07fe05d8, type: 3}
+  obstaclePrefab:
+  - {fileID: 6650655716327874104, guid: a45f2ac88ccb54d39a4f342b07fe05d8, type: 3}
   itemPrefab: {fileID: 6650655716327874104, guid: f27640f6bb22e4cc7af56407127d8d40, type: 3}
   itemCreatePercent: 20
   spawnInterval: 4

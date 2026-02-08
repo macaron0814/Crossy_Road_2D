@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -1107108470470632415}
   - component: {fileID: -4513253920625037123}
   m_Layer: 0
-  m_Name: wood
+  m_Name: wood 1
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -164,8 +164,8 @@ Transform:
   m_GameObject: {fileID: 7159072529136802573}
   serializedVersion: 2
   m_LocalRotation: {x: -0.258819, y: -0, z: -0, w: 0.9659259}
-  m_LocalPosition: {x: 0, y: 0.179, z: 0.072}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.46, z: -0.09}
+  m_LocalScale: {x: -2.5, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6494804830523673348}
@@ -203,7 +203,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 81aa34f5e78234b349b069a42372f6de, type: 2}
+  - {fileID: 2100000, guid: eee4372a8deee49eb8ab5cbb88fc7f61, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
