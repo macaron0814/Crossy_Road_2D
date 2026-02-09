@@ -115,7 +115,7 @@ public class Lane : MonoBehaviour
         Vector3 spawnPos = new Vector3(spawnX, transform.position.y, -0.5f);
 
         // 障害物を生成
-        int obstacleRand = UnityEngine.Random.Range(0, 3);
+        int obstacleRand = UnityEngine.Random.Range(0, obstaclePrefab.Length);
         GameObject obstacle = Instantiate(obstaclePrefab[obstacleRand], spawnPos, Quaternion.identity);
         obstacle.transform.SetParent(transform);
 

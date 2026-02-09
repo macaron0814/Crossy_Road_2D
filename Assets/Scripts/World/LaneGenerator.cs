@@ -14,8 +14,13 @@ public class LaneGenerator : MonoBehaviour
     public int lanesBehind = 5; // プレイヤーの後方に保持するレーン数
 
     private Dictionary<int, GameObject> spawnedLanes = new Dictionary<int, GameObject>();
-    private int currentMaxLane = 0;
-    private int currentMinLane = 0;
+
+    // 初期生成の範囲を記録（以降の生成と完全に同じ範囲を維持するため）
+    private int initialPlayerLane;
+    private bool initialized = false;
+    
+    // 画面端の空白を防ぐための予備生成数（カメラのデッドゾーン対策）
+    private const int GENERATION_MARGIN = 5;
 
     void Start()
     {
@@ -37,33 +42,53 @@ public class LaneGenerator : MonoBehaviour
     {
         if (player == null || lanePrefabs == null || lanePrefabs.Length == 0) return;
 
-        int playerLane = Mathf.FloorToInt(player.position.y / laneHeight);
+        int playerLane = Mathf.RoundToInt(player.position.y / laneHeight);
 
-        // 前方にレーンを生成
-        while (currentMaxLane < playerLane + lanesAhead)
+        // 目標範囲を計算（InitializeLanesと完全に同じ計算）
+        int targetMin = playerLane - lanesBehind;
+        int targetMax = playerLane + lanesAhead + GENERATION_MARGIN; // exclusive（targetMax自体は含まない）
+
+        // 範囲外のレーンを削除
+        List<int> toRemove = new List<int>();
+        foreach (var key in spawnedLanes.Keys)
         {
-            SpawnLane(currentMaxLane);
-            currentMaxLane++;
+            if (key < targetMin || key >= targetMax)
+            {
+                toRemove.Add(key);
+            }
+        }
+        foreach (var key in toRemove)
+        {
+            RemoveLane(key);
         }
 
-        // 後方の古いレーンを削除
-        while (currentMinLane < playerLane - lanesBehind)
+        // 範囲内で未生成のレーンを生成
+        for (int i = targetMin; i < targetMax; i++)
         {
-            RemoveLane(currentMinLane);
-            currentMinLane++;
+            if (!spawnedLanes.ContainsKey(i))
+            {
+                SpawnLane(i);
+            }
         }
     }
 
     void InitializeLanes()
     {
-        // 初期位置から数レーン生成
-        int startLane = -5;
-        for (int i = startLane; i < lanesAhead; i++)
+        if (player == null) return;
+
+        initialPlayerLane = Mathf.RoundToInt(player.position.y / laneHeight);
+
+        // 目標範囲を計算（Updateと完全に同じ計算式）
+        int targetMin = initialPlayerLane - lanesBehind;
+        int targetMax = initialPlayerLane + lanesAhead + GENERATION_MARGIN; // exclusive
+
+        for (int i = targetMin; i < targetMax; i++)
         {
             StartSpawnLane(i);
-            currentMaxLane = Mathf.Max(currentMaxLane, i + 1);
         }
-        currentMinLane = startLane;
+
+        initialized = true;
+        Debug.Log($"[LaneGenerator] 初期生成完了: playerLane={initialPlayerLane}, 範囲=[{targetMin}, {targetMax - 1}], 生成数={spawnedLanes.Count}");
     }
 
     void StartSpawnLane(int laneIndex)
@@ -71,7 +96,7 @@ public class LaneGenerator : MonoBehaviour
         // 既に生成されている場合はスキップ
         if (spawnedLanes.ContainsKey(laneIndex)) return;
 
-        // ランダムにレーンプレハブを選択
+        // 初期レーンは最初のプレハブ（Grass）を使用
         GameObject prefabToSpawn = lanePrefabs[0];
 
         // レーンを生成
@@ -120,8 +145,6 @@ public class LaneGenerator : MonoBehaviour
             }
         }
         spawnedLanes.Clear();
-        currentMaxLane = 0;
-        currentMinLane = 0;
+        initialized = false;
     }
 }
-
