@@ -13,6 +13,19 @@ public class PlayerController : MonoBehaviour
     public LayerMask obstacleLayer; // 障害物のレイヤー（オプション）
     public string obstacleTag = "Obstacle"; // 障害物のタグ
 
+    [Header("ゲームオーバー演出")]
+    [Tooltip("Hitアニメーションの1フレームの再生時間")]
+    [SerializeField] private float hitFrameDuration = 0.15f;
+    [Tooltip("最後から2番目(ぶつかり)フレームを保持する時間")]
+    [SerializeField] private float hitHoldDuration = 0.2f;
+    [Tooltip("最後のフレームでずり落ちる距離")]
+    [Min(0f)]
+    [SerializeField] private float hitSlideDistance = 0.4f;
+    [Tooltip("最後のフレームでずり落ちる時間")]
+    [SerializeField] private float hitSlideDuration = 0.35f;
+    [Tooltip("ぶつかった時の最大スケール倍率")]
+    [SerializeField] private float hitScaleMultiplier = 1.25f;
+
     private bool isMoving = false;
     private Vector3 targetPos;
     private Vector2 swipeStartPos;
@@ -22,6 +35,11 @@ public class PlayerController : MonoBehaviour
     private PlayerSpriteAnimator animator;
     private float lastMoveEndTime;
     private const float IDLE_DELAY = 0.4f;
+    private bool isGameOverSequence;
+    private PlayerBaseMapSwapper swapper;
+    private Collider2D[] cachedColliders;
+    private Rigidbody2D cachedRigidbody2D;
+    private Coroutine gameOverCoroutine;
 
     enum SelectDir
     {
@@ -35,6 +53,8 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         animator = PlayerSpriteAnimator.instance;
+        swapper = GetComponent<PlayerBaseMapSwapper>();
+        cachedRigidbody2D = GetComponent<Rigidbody2D>();
 
         // GameManagerのイベントを購読
         if (GameManager.Instance != null)
@@ -45,7 +65,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (isMoving) return;
+        if (isGameOverSequence || isMoving) return;
 
         // 入力が無いときだけアイドルに戻す（毎フレームのリスタートを防ぐ）
         // 連続移動時のアニメーション切れを防ぐため、移動終了から少し猶予を持たせる
@@ -323,12 +343,31 @@ public class PlayerController : MonoBehaviour
 
     void GameOverPlayer()
     {
+        if (isGameOverSequence) return;
+        isGameOverSequence = true;
+
         // イベントから購読解除してから破棄
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnGameOverPlayer -= GameOverPlayer;
         }
-        Destroy(gameObject);
+
+        StopAllCoroutines();
+        isMoving = false;
+        DisableCollisionForGameOver();
+
+        if (animator == null) animator = PlayerSpriteAnimator.instance;
+        if (animator != null)
+        {
+            animator.Pause();
+            animator.SetMotion(PlayerBaseMapSwapper.MotionType.Hit, true);
+        }
+
+        if (gameOverCoroutine != null)
+        {
+            StopCoroutine(gameOverCoroutine);
+        }
+        gameOverCoroutine = StartCoroutine(PlayHitSequence());
     }
 
     private void OnDestroy()
@@ -342,6 +381,8 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isGameOverSequence) return;
+
         if (other.CompareTag("Car"))
         {
             GameManager.Instance.GameOver();
@@ -370,5 +411,96 @@ public class PlayerController : MonoBehaviour
 #else
         return Input.touchCount > 0 || Input.GetMouseButton(0);
 #endif
+    }
+
+    private void DisableCollisionForGameOver()
+    {
+        if (cachedColliders == null || cachedColliders.Length == 0)
+        {
+            cachedColliders = GetComponentsInChildren<Collider2D>();
+        }
+        foreach (var col in cachedColliders)
+        {
+            col.enabled = false;
+        }
+
+        if (cachedRigidbody2D != null)
+        {
+            cachedRigidbody2D.linearVelocity = Vector2.zero;
+            cachedRigidbody2D.angularVelocity = 0f;
+            cachedRigidbody2D.simulated = false;
+        }
+    }
+
+    private IEnumerator PlayHitSequence()
+    {
+        if (swapper == null) swapper = GetComponent<PlayerBaseMapSwapper>();
+        if (swapper == null)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
+
+        int frameCount = swapper.GetFrameCount(PlayerBaseMapSwapper.MotionType.Hit);
+        if (frameCount <= 0)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
+
+        Vector3 baseScale = transform.GetChild(0).localScale;
+        Vector3 maxScale = baseScale * hitScaleMultiplier;
+        int lastFrameIndex = frameCount - 1;
+        int impactFrameIndex = Mathf.Max(0, frameCount - 2);
+        float frameDuration = Mathf.Max(0f, hitFrameDuration);
+        WaitForSeconds frameWait = frameDuration > 0f ? new WaitForSeconds(frameDuration) : null;
+
+        for (int i = 0; i <= impactFrameIndex; i++)
+        {
+            float t = impactFrameIndex > 0 ? (float)i / impactFrameIndex : 1f;
+            transform.GetChild(0).localScale = Vector3.Lerp(baseScale, maxScale, t);
+            swapper.Apply(PlayerBaseMapSwapper.MotionType.Hit, i);
+            if (frameWait != null)
+            {
+                yield return frameWait;
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+
+        if (hitHoldDuration > 0f)
+        {
+            float holdTimer = 0f;
+            while (holdTimer < hitHoldDuration)
+            {
+                holdTimer += Time.deltaTime;
+                yield return null;
+            }
+        }
+
+        transform.GetChild(0).localScale = maxScale;
+        swapper.Apply(PlayerBaseMapSwapper.MotionType.Hit, lastFrameIndex);
+
+        Vector3 startPos = transform.GetChild(0).position;
+        Vector3 endPos = startPos + Vector3.down * hitSlideDistance;
+        if (hitSlideDuration <= 0f)
+        {
+            transform.GetChild(0).position = endPos;
+        }
+        else
+        {
+            float slideTimer = 0f;
+            while (slideTimer < hitSlideDuration)
+            {
+                slideTimer += Time.deltaTime;
+                float t = slideTimer / hitSlideDuration;
+                transform.GetChild(0).position = Vector3.Lerp(startPos, endPos, t);
+                yield return null;
+            }
+        }
+
+        Destroy(gameObject);
     }
 }

@@ -2459,6 +2459,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   obstacleTag: Obstacle
+  hitFrameDuration: 0.15
+  hitHoldDuration: 0.5
+  hitSlideDistance: 15
+  hitSlideDuration: 3
+  hitScaleMultiplier: 4
 --- !u!4 &1742705917
 Transform:
   m_ObjectHideFlags: 0
